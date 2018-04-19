@@ -1,10 +1,7 @@
+import java.util.Random;
 
 /**
- * I added this class just to do
- * random testing. I didn't want to add to 
- * TestBTree class in case that was for more 
- * BTree specific tests.
- * 
+ *  
  * @author James Brooks
  *
  */
@@ -13,49 +10,54 @@ public class Tester {
 	public static void main(String[] args) {
 		encoderTest();
 	}
-	
+
 	public static void encoderTest() {
 		GeneSequenceEncoder encoder = new GeneSequenceEncoder();
-		String seq1 = "aaaaaaaattccggttggggaaaattgtgtt";
-		String seq2 = "tccggtgaaaaagggggggcttttgaaaaaa";
-		String seq3 = "cccggtgaaaaagggggggcttttgaaaaaa";
-		String seq4 = "gccggtgaaaaagggggggcttttgaaaaaa";
-		
-		long encodedSeq1 = encoder.encode(seq1);
-		long encodedSeq2 = encoder.encode(seq2);
-		long encodedSeq3 = encoder.encode(seq3);
-		long encodedSeq4 = encoder.encode(seq4);
-		
-		System.out.print("encoder test 1: ");
-		if(seq1.equals(encoder.decode(encodedSeq1))) {
-			System.out.println("success");
+		int testCount = 0;
+		int successCount = 0;
+		int failureCount = 0;
+		for (int i = 1; i <= 31; i++) {
+			for (int j = 0; j < 1000; j++) {
+				testCount++;
+				String seq = randomSeqGenerator(i);
+				long encodedSeq = encoder.encode(seq);
+				//System.out.print("encoder test - seq length " + i + ": ");
+				if (seq.equals(encoder.decode(encodedSeq))) {
+					successCount++;
+					//System.out.println("success");
+				} else {
+					failureCount++;
+					//System.out.println("failure");
+				}
+			}
 		}
-		else {
-			System.out.println("failure");
+		System.out.println("------------------------------------------");
+		System.out.println("Sequence Encoder Tests:");
+		System.out.println("1000 tests per sequence length from 1 to 31 with random sequences");
+		System.out.println("Tests: " + testCount);
+		System.out.println("Successes: " + successCount);
+		System.out.println("Failures: " + failureCount);
+		System.out.println("------------------------------------------");
+	}
+	
+	public static String randomSeqGenerator(int length) {
+		Random random = new Random();
+		String seq = "";
+		for(int i = 0; i < length; i++) {
+			int nextInt = random.nextInt(4);
+			if(nextInt == 0) {
+				seq = seq + "a";
+			}
+			else if(nextInt == 1) {
+				seq = seq + "c";
+			}
+			else if(nextInt == 2) {
+				seq = seq + "g";
+			}
+			else if(nextInt == 3) {
+				seq = seq + "t";
+			}
 		}
-
-		System.out.print("encoder test 2: ");
-		if(seq2.equals(encoder.decode(encodedSeq2))) {
-			System.out.println("success");
-		}
-		else {
-			System.out.println("failure");
-		}
-		
-		System.out.print("encoder test 3: ");
-		if(seq3.equals(encoder.decode(encodedSeq3))) {
-			System.out.println("success");
-		}
-		else {
-			System.out.println("failure");
-		}
-		
-		System.out.print("encoder test 4: ");
-		if(seq4.equals(encoder.decode(encodedSeq4))) {
-			System.out.println("success");
-		}
-		else {
-			System.out.println("failure");
-		}
+		return seq;
 	}
 }
