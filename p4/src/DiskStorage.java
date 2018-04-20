@@ -124,7 +124,7 @@ public class DiskStorage {
 		}
 		public int childPointerStart(int nodePointer) {
 			int childStart;
-			return childStart = nodeStart(nodePointer)  + ((2*degree)-1)*12;
+			return childStart = nodeStart(nodePointer)  + ((2*degree)-1)*12 +16;
 		}
 		
 
@@ -148,7 +148,8 @@ public class DiskStorage {
 			}
 			if (!node.isLeaf()) {
 				raFile.seek(childPointerStart(node.getNodePointer()));
-				for (int i = 1; i< node.numOfChildren(); i++) {
+				for (int i = 1; i<= node.numOfChildren(); i++) {
+			System.out.println("filePointer at start of child "+i+ " write is :" + raFile.getFilePointer());
 					raFile.writeInt(node.getChildPointer(i));
 				}
 			}
@@ -209,7 +210,8 @@ public class DiskStorage {
 				}
 				if (!nodeToReturn.isLeaf()) {
 					raFile.seek(childPointerStart(nodeToReturn.getNodePointer()));
-					for (int i = 1; i< nodeToReturn.numOfChildren(); i++) {
+//					for (int i = 1; i<= nodeToReturn.numOfChildren(); i++) {
+					for (int i = 1; i<=localNumOfObjects+1 ; i++) {			//your rely on the number children in the array but you have not popluated it yet
 						nodeToReturn.setChildPointer(i, raFile.readInt());  
 					}
 				}

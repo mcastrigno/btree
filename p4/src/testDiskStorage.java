@@ -45,7 +45,7 @@ public class testDiskStorage {
 		testTree1.insert(ObjectA); 
 		testTree1.insert(ObjectB); 
 		testTree1.insert(ObjectC); 
-		System.out.println(testTree1.toString());
+	//	System.out.println(testTree1.toString());
 		testTree1.insert(ObjectD); 
 		System.out.println(testTree1.toString());
 		testTree1.rootWrite();

@@ -102,6 +102,7 @@ public class BTree {
 			root = node;
 			root.setLeaf(false);
 			root.setChildPointer(1, oldRoot.getNodePointer());
+			storage.rootWrite(root); 	//added to make split child work
 			splitChild(root, 1);
 			insertNonfull(root, key);
 		}
@@ -189,7 +190,7 @@ public class BTree {
 		
 		if (!y.isLeaf()){										//only comes into play if node is not a leaf 
 			for (int j = 1; j <= (degree); j++) 				//you move the child pointers over to the new half of the split
-				z.setChildPointer(j, y.removeChildPointer(1+degree));	//using 1 instead of j because as we remove the arraylist shrinks
+				z.setChildPointer(j, y.removeChildPointer(j+degree));	//using 1 instead of j because as we remove the arraylist shrinks
 //				z.setChildPointer(j, y.getChildPointer(j+degree));			
 
 			//book say to set number of y object  to degree - 1 but I don't think that
