@@ -91,22 +91,22 @@ public class TestTree2 {
 		System.out.println(testTree1.toString());
 		System.out.println("----------------------------------------------------\n");
 		
-//		testTree1.insert(ObjectK);
-//		System.out.println(testTree1.toString());
-//		System.out.println("----------------------------------------------------\n");		
-//		
-//		testTree1.insert(ObjectL);
-//		System.out.println(testTree1.toString());
-//		System.out.println("----------------------------------------------------\n");	
-//		
-//		testTree1.insert(ObjectM);
-//		System.out.println(testTree1.toString());
-//		System.out.println("----------------------------------------------------\n");	
-//		
-//		testTree1.insert(ObjectN);
-//		System.out.println(testTree1.toString());
-//		System.out.println("----------------------------------------------------\n");	
-//		
+		testTree1.insert(ObjectK);
+		System.out.println(testTree1.toString());
+		System.out.println("----------------------------------------------------\n");		
+		
+		testTree1.insert(ObjectL);
+		System.out.println(testTree1.toString());
+		System.out.println("----------------------------------------------------\n");	
+		
+		testTree1.insert(ObjectM);
+		System.out.println(testTree1.toString());
+		System.out.println("----------------------------------------------------\n");	
+		
+		testTree1.insert(ObjectN);
+		System.out.println(testTree1.toString());
+		System.out.println("----------------------------------------------------\n");	
+		
 		System.out.println(testTree1.toString());
 		System.out.println(testTree1.dnaDump());
 		testTree1.rootWrite();
