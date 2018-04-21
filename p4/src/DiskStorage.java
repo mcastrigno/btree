@@ -105,6 +105,7 @@ public class DiskStorage {
 				raFile.seek(4);
 				this.degree = raFile.readInt();
 				this.sequenceLength = raFile.read();
+				this.nodeSize = (16 + (2*degree -1)*12 + (2*degree)*4);
 				//raFile.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
