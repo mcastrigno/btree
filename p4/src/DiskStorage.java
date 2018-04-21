@@ -57,9 +57,17 @@ public class DiskStorage {
 		private int degree;
 		private int sequenceLength;
 		private int nodeSize;
+		private boolean cache = false;
+		private int cacheSize = 100;
+		private  Cache<BTreeNode> NodeCache;  
 		
 		
-		public DiskStorage(String BaseFileName, int degree, int sequenceLength) {
+		public DiskStorage(String BaseFileName, int degree, int sequenceLength, boolean cache, int cacheSize) {
+			this.cache = cache;
+			this.cacheSize = cacheSize;
+			if(cache) {
+				NodeCache = new Cache<BTreeNode>(cacheSize);
+			}
 			this.degree = degree;
 			this.sequenceLength = sequenceLength;
 
@@ -85,7 +93,12 @@ public class DiskStorage {
  * @param fullFilename
  * @throws IOException
  */
-		public DiskStorage(String fullFilename){	
+		public DiskStorage(String fullFilename, boolean cache, int cacheSize){	
+			this.cache = cache;
+			this.cacheSize = cacheSize;
+			if(cache) {
+				NodeCache = new Cache<BTreeNode>(cacheSize);
+			}
 			try {
 				this.fileName = fullFilename;
 				raFile = new RandomAccessFile(fullFilename, rMode);	//Store Metadata, degree, sequenceLength
@@ -100,6 +113,7 @@ public class DiskStorage {
 		} 
 		
 		public void closeFile() {
+			//if cache is in use, write back to cache before closing file
 			try {
 				raFile.close();
 			} catch (IOException e) {
@@ -129,11 +143,22 @@ public class DiskStorage {
 		
 
 		public void nodeWrite(BTreeNode node) {					//Note we do not store the dummy object of the node
+			if(cache) {											
+				if(NodeCache.getObject(node) != null) {			//if the object is in cache
+					NodeCache.removeObject(node);				//we remove it and put to the
+					NodeCache.addObject(node);					//front of the cache then we proceed to disk
+					System.err.println("Cache Hit on Write");
+				}else if(!NodeCache.addObject(node)) {			//if the node is not in cache, we add it 
+					NodeCache.removeLast();						//but if the cache is full we make room
+					NodeCache.addObject(node);					//for it first
+				}
+			}
+			
 			try {
 			//raFile = new RandomAccessFile(fileName, rwMode);	
 			int writeSeekPointer = node.getNodePointer();	
 			raFile.seek(nodeStart(node.getNodePointer()));
-			System.out.println("filePointer at start of write is :" + raFile.getFilePointer());
+			System.err.println("filePointer at start of write is :" + raFile.getFilePointer());
 			raFile.writeInt(node.getNodePointer());
 			raFile.writeInt(node.numOfObjects());
 			if (!node.isLeaf()) {
@@ -149,7 +174,7 @@ public class DiskStorage {
 			if (!node.isLeaf()) {
 				raFile.seek(childPointerStart(node.getNodePointer()));
 				for (int i = 1; i<= node.numOfChildren(); i++) {
-			System.out.println("filePointer at start of child "+i+ " write is :" + raFile.getFilePointer());
+			//System.err.println("filePointer at start of child "+i+ " write is :" + raFile.getFilePointer());
 					raFile.writeInt(node.getChildPointer(i));
 				}
 			}
@@ -189,9 +214,17 @@ public class DiskStorage {
 
 		public BTreeNode nodeRead (int location) {
 			BTreeNode nodeToReturn = new BTreeNode(0);					//constructor inserts dummy object and dummy child pointer
+			if(cache) {
+				nodeToReturn.setNodePointer(location);			//yes you need an equals method!
+			}if(NodeCache.getObject(nodeToReturn) != null) {
+				System.err.println("Cache hit on Read"); 
+				nodeToReturn = NodeCache.removeObject(nodeToReturn);
+				NodeCache.addObject(nodeToReturn);		
+				return nodeToReturn;
+			}											
 			try {
 				raFile.seek(nodeStart(location));
-			System.out.println("filePointer at start of read is :" + raFile.getFilePointer());
+				System.err.println("filePointer at start of read is :" + raFile.getFilePointer());
 				nodeToReturn.setNodePointer(raFile.readInt());
 				int localNumOfObjects = raFile.readInt();
 				int localIsLeaf = raFile.readInt();
@@ -210,7 +243,7 @@ public class DiskStorage {
 				}
 				if (!nodeToReturn.isLeaf()) {
 					raFile.seek(childPointerStart(nodeToReturn.getNodePointer()));
-//					for (int i = 1; i<= nodeToReturn.numOfChildren(); i++) {
+					//					for (int i = 1; i<= nodeToReturn.numOfChildren(); i++) {
 					for (int i = 1; i<=localNumOfObjects+1 ; i++) {			//your rely on the number children in the array but you have not popluated it yet
 						nodeToReturn.setChildPointer(i, raFile.readInt());  
 					}
@@ -219,8 +252,9 @@ public class DiskStorage {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}							
-
-
+			if(cache) {
+				NodeCache.addObject(nodeToReturn);	
+			}
 			return nodeToReturn;
 		}
 }

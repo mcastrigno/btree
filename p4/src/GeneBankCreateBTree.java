@@ -12,10 +12,11 @@ public class GeneBankCreateBTree {
 		checkUsage(args);
 		boolean useCache = (Integer.parseInt(args[0]) == 1);
 		boolean useDebug;
+		int cacheSize = 100;
 		int degree = Integer.parseInt(args[1]);
 		String fileName = args[2];
 		sequenceLength = Integer.parseInt(args[3]);
-		int cacheSize, debugLevel;
+		int debugLevel;
 
 		if (useCache) {
 			cacheSize = Integer.parseInt(args[4]);
@@ -35,7 +36,7 @@ public class GeneBankCreateBTree {
 			System.exit(1);
 		}
 	
-		newBTree = new BTree(degree, sequenceLength, gbkFilename);
+		newBTree = new BTree(degree, sequenceLength, gbkFilename, useCache, cacheSize);
 
 		/////////////////////////////////////////
 		//GeneBank File Parsing//////////////////

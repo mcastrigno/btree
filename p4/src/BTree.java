@@ -16,6 +16,8 @@ public class BTree {
 	private int numOfTreeNodes = 0;
 	private int treeStorageNumOfNodes = 0; // Used to track that the number of nodes in storage matches the number of nodes the tree object has
 	private String gbkFilename ="testDefault";
+	private boolean cache;
+	private int cacheSize;
 	//Creating a tree requires creating a file structure on disk.
 	//TreeStorage class emulates that file.
 	//The actual disk version of the class is called Storage.
@@ -26,11 +28,11 @@ public class BTree {
 	//should never change, what node points to it will, but a node
 	//will always have the same location on disk
 	
-	public BTree(int degree, int sequenceLength, String gbkFilename) {	
+	public BTree(int degree, int sequenceLength, String gbkFilename, boolean cache, int cacheSize) {	
 		this.sequenceLength = sequenceLength;
 		this.gbkFilename = gbkFilename;											//Once this constructor is called 
 //		this.storage = new TreeStorage(gbkFilename, degree, sequenceLength);	//There is storage allocated with
-		this.storage = new DiskStorage(gbkFilename, degree, sequenceLength);	//There is storage allocated with
+		this.storage = new DiskStorage(gbkFilename, degree, sequenceLength, cache, cacheSize );	//There is storage allocated with
 		this.degree = degree;													//one node in it.
 		
 //		this.storage = new DiskStorage(degree, sequenceLength);		//Once the "real" disk storage is ready
@@ -39,9 +41,9 @@ public class BTree {
 		root.setLeaf(true);
 	}
 
-	public BTree(String fullFilename) throws IOException {						//This constructor is used when you want to read a BTree from disk
+	public BTree(String fullFilename, boolean cache,int cacheSize) throws IOException {						//This constructor is used when you want to read a BTree from disk
 		//this.gbkFilename = gbkFilename;						//This file is opened and metadata read so data can be accessed
-		this.storage = new DiskStorage(fullFilename);		//opens the stream and ready to read
+		this.storage = new DiskStorage(fullFilename, cache, cacheSize);		//opens the stream and ready to read
 		root = storage.rootRead();							//get the root
 		this.degree = storage.getDegree();					//get the degree
 		this.sequenceLength = storage.getSeqenceLength();	//get the sequence length
@@ -53,7 +55,7 @@ public class BTree {
 		numOfTreeNodes++;
 		newNode = new BTreeNode(numOfTreeNodes);
 		storage.nodeWrite(newNode);
-		System.out.println("The Tree number of Nodes is :" + treeStorageNumOfNodes + " and the TreeStorage number of nodes is: " + numOfTreeNodes);
+		System.err.println("The Tree number of Nodes is :" + treeStorageNumOfNodes + " and the TreeStorage number of nodes is: " + numOfTreeNodes);
 		return newNode;
 	}
 	/**
