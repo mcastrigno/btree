@@ -48,7 +48,7 @@ public class GeneBankCreateBTree {
 			GeneSequenceEncoder encoder = new GeneSequenceEncoder();
 			TreeObject obj;
 			Scanner scan = new Scanner(new File(fileName));
-			while(scan.hasNextLine()) {		
+			while(scan.hasNextLine() && !currentToken.equals("//")) {		
 				if(scan.nextLine().contains("ORIGIN")) {
 					while(scan.hasNext()) {	
 						currentToken = scan.next();
@@ -56,12 +56,12 @@ public class GeneBankCreateBTree {
 							currentSegment = currentSegment + currentToken.toLowerCase();
 						}
 					}
-				}
-				for(int i = 0; i <= (currentSegment.length() - sequenceLength); i++) {	
-					currentSubstring = currentSegment.substring(i, (i + sequenceLength));
-					if(!currentSubstring.contains("n")) {
-						obj = new TreeObject(encoder.encode(currentSubstring));
-						newBTree.insert(obj);
+					for(int i = 0; i <= (currentSegment.length() - sequenceLength); i++) {	
+						currentSubstring = currentSegment.substring(i, (i + sequenceLength));
+						if(!currentSubstring.contains("n")) {
+							obj = new TreeObject(encoder.encode(currentSubstring));
+							newBTree.insert(obj);
+						}
 					}
 				}
 			}
