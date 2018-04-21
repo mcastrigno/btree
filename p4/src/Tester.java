@@ -71,9 +71,9 @@ public class Tester {
 		String testSubstring = "";
 		int segmentCount = 0;
 
-		/////////////////////////////////////////////
+		//////////////////////////////////////////////
 		// GeneBank File Parsing - Modified for Test//
-		/////////////////////////////////////////////
+		//////////////////////////////////////////////
 		// This uses test2.gbk
 		String fileName = "C:\\Users\\James\\git\\btree\\p4\\src\\data\\test2.gbk";
 		System.out.println("------------------------------------------");
@@ -135,6 +135,7 @@ public class Tester {
 				}
 			} catch (FileNotFoundException e) {
 				System.out.println("Error: File not found!");
+				return;
 			}
 		}
 		System.out.println("Result: Success!");
