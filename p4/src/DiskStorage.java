@@ -147,7 +147,7 @@ public class DiskStorage {
 				if(NodeCache.getObject(node) != null) {			//if the object is in cache
 					NodeCache.removeObject(node);				//we remove it and put to the
 					NodeCache.addObject(node);					//front of the cache then we proceed to disk
-					System.err.println("Cache Hit on Write");
+					//System.err.println("Cache Hit on Write");
 				}else if(!NodeCache.addObject(node)) {			//if the node is not in cache, we add it 
 					NodeCache.removeLast();						//but if the cache is full we make room
 					NodeCache.addObject(node);					//for it first
@@ -158,7 +158,7 @@ public class DiskStorage {
 			//raFile = new RandomAccessFile(fileName, rwMode);	
 			int writeSeekPointer = node.getNodePointer();	
 			raFile.seek(nodeStart(node.getNodePointer()));
-			System.err.println("filePointer at start of write is :" + raFile.getFilePointer());
+			//System.err.println("filePointer at start of write is :" + raFile.getFilePointer());
 			raFile.writeInt(node.getNodePointer());
 			raFile.writeInt(node.numOfObjects());
 			if (!node.isLeaf()) {
@@ -216,15 +216,16 @@ public class DiskStorage {
 			BTreeNode nodeToReturn = new BTreeNode(0);					//constructor inserts dummy object and dummy child pointer
 			if(cache) {
 				nodeToReturn.setNodePointer(location);			//yes you need an equals method!
-			}if(NodeCache.getObject(nodeToReturn) != null) {
-				System.err.println("Cache hit on Read"); 
+			if(NodeCache.getObject(nodeToReturn) != null) {
+				//System.err.println("Cache hit on Read"); 
 				nodeToReturn = NodeCache.removeObject(nodeToReturn);
 				NodeCache.addObject(nodeToReturn);		
 				return nodeToReturn;
-			}											
+			}
+			}
 			try {
 				raFile.seek(nodeStart(location));
-				System.err.println("filePointer at start of read is :" + raFile.getFilePointer());
+				//System.err.println("filePointer at start of read is :" + raFile.getFilePointer());
 				nodeToReturn.setNodePointer(raFile.readInt());
 				int localNumOfObjects = raFile.readInt();
 				int localIsLeaf = raFile.readInt();
@@ -255,7 +256,9 @@ public class DiskStorage {
 			if(cache) {
 				NodeCache.addObject(nodeToReturn);	
 			}
+			
 			return nodeToReturn;
+		
 		}
 }
 

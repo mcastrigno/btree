@@ -1,3 +1,5 @@
+import java.io.IOException;
+
 /**
  * 
  * @author Matthew Castrigno
@@ -6,7 +8,7 @@
 
 public class TestTree2 {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		
 		//Test Case # 1 insert 3 objects in a tree of degree 2
 		
@@ -115,11 +117,16 @@ public class TestTree2 {
 		testTree1.rootWrite();
 		testTree1.closeTreeFile();
 		
-		GeneSequenceEncoder encoder = new GeneSequenceEncoder();
-		
-		for (long i = 0; i< 14; i++) {
-			System.out.println("For the long : "+ i +" the decoder outputs "+ encoder.decode(i));
-		}
+
+		BTree readBTree = new BTree("testFilename.btree.data.2.2", cache,cacheSize);
+
+		readBTree.rootRead();
+		System.out.println(readBTree.toString());
+//		
+//		GeneSequenceEncoder encoder = new GeneSequenceEncoder();
+//		for (long i = 0; i< 14; i++) {
+//			System.out.println("For the long : "+ i +" the decoder outputs "+ encoder.decode(i));
+//		}
 	}
 
 }

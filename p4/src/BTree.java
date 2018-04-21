@@ -11,6 +11,7 @@ public class BTree {
 	private int sequenceLength;			//Even though the BTree does not need this info it may be good to store in case the user 
 										//attempts to search a sequence length different than what was stored as an error check
 	private BTreeNode root;
+	private BTreeNode oldRoot;
 //	public TreeStorage storage;
 	public DiskStorage storage;
 	private int numOfTreeNodes = 0;
@@ -18,6 +19,7 @@ public class BTree {
 	private String gbkFilename ="testDefault";
 	private boolean cache;
 	private int cacheSize;
+	
 	//Creating a tree requires creating a file structure on disk.
 	//TreeStorage class emulates that file.
 	//The actual disk version of the class is called Storage.
@@ -55,7 +57,7 @@ public class BTree {
 		numOfTreeNodes++;
 		newNode = new BTreeNode(numOfTreeNodes);
 		storage.nodeWrite(newNode);
-		System.err.println("The Tree number of Nodes is :" + treeStorageNumOfNodes + " and the TreeStorage number of nodes is: " + numOfTreeNodes);
+		//System.err.println("The Tree number of Nodes is :" + treeStorageNumOfNodes + " and the TreeStorage number of nodes is: " + numOfTreeNodes);
 		return newNode;
 	}
 	/**
@@ -63,6 +65,9 @@ public class BTree {
 	 */
 	public void rootWrite() {
 		storage.rootWrite(root);
+	}
+	public void rootRead() {
+		root = storage.rootRead();
 	}
 	
 	public void closeTreeFile() {
@@ -98,7 +103,7 @@ public class BTree {
 	
 	public void insert(TreeObject key) {
 		//if(numOfTreeNodes == 0) createRoot(key); break;u
-		BTreeNode oldRoot = root;
+		oldRoot = root;
 		if(root.numOfObjects() == ((2*degree) - 1)) {
 			BTreeNode node = allocateNode();  
 			root = node;
@@ -181,7 +186,12 @@ public class BTree {
 //	}
 	private void splitChild(BTreeNode currentNode, int childIndex) {
 		BTreeNode z = allocateNode();
-		BTreeNode y = storage.nodeRead(currentNode.getChildPointer(childIndex));
+		BTreeNode y;
+		if(oldRoot.getNodePointer()== currentNode.getChildPointer(childIndex)) {
+			y = oldRoot;
+		}else {
+			y = storage.nodeRead(currentNode.getChildPointer(childIndex));
+		}
 		z.setLeaf(y.isLeaf());
 		//book say to set number of z objects to degree - 1 but I don't think that
 		//makes sense here since the node has an arrayList of objects
