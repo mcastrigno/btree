@@ -39,7 +39,7 @@ public class GeneBankCreateBTree {
 			System.exit(1);
 		}
 	
-		newBTree = new BTree(degree, sequenceLength, gbkFilename, useCache, cacheSize);
+		newBTree = new BTree(degree, sequenceLength, fileName , useCache, cacheSize);
 
 		//Diagnostic Messages
 		if(debugLevel == 0) {
