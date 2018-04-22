@@ -126,17 +126,21 @@ public class BTree {
 	private void insertNonfull(BTreeNode currentNode, TreeObject key) {
 		int i = currentNode.numOfObjects();
 		if(currentNode.isLeaf()) {
-
-
 			while((i >= 1) && (key.getData() <= currentNode.keyObjectAt(i).getData())){
-				if ((key.getData() == currentNode.keyObjectAt(i).getData())) {
+				if(key.getData() ==currentNode.keyObjectAt(i).getData()) {
 					currentNode.keyObjectAt(i).incrementFrequency();
+					storage.nodeWrite(currentNode);
 					return;
-				}					
-				currentNode.putObject((i+1), currentNode.keyObjectAt(i));
+				}
 				i--;
-
 			}
+
+			i = currentNode.numOfObjects();
+				while((i >= 1) && (key.getData() < currentNode.keyObjectAt(i).getData())){
+					currentNode.putObject((i+1), currentNode.keyObjectAt(i));
+					i--;
+				}
+			
 			currentNode.putObject(i+1, key);
 			//pseudo code says to increase number of nodes by one but that happens automatically in the putObjects method
 			storage.nodeWrite(currentNode);
