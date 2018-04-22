@@ -4,7 +4,6 @@ import java.util.Scanner;
 
 public class GeneBankSearch {
 
-
 	public static void main(String[] args) {
 
 		checkUsage(args);
@@ -14,8 +13,8 @@ public class GeneBankSearch {
 		String queryFileName = args[2];
 		boolean useDebug;
 		int debugLevel = 0;
-		
-		//check debug level
+
+		// check debug level
 		if (useCache) {
 			cacheSize = Integer.parseInt(args[3]);
 			if (args.length == 5) {
@@ -26,7 +25,7 @@ public class GeneBankSearch {
 			useDebug = true;
 			debugLevel = Integer.parseInt(args[3]);
 		}
-	
+
 		try {
 			BTree readBTree = new BTree(bTreeFileName, useCache, cacheSize);
 			GeneSequenceEncoder encoder = new GeneSequenceEncoder();
@@ -35,15 +34,15 @@ public class GeneBankSearch {
 			TreeObject objToFind;
 			int currentFreq = 0;
 			Scanner scan = new Scanner(new File(queryFileName));
-			while(scan.hasNextLine()) {
+			while (scan.hasNextLine()) {
 				currentLine = scan.nextLine().toLowerCase();
 				objToFind = readBTree.search(readBTree.getRoot(), encoder.encode(currentLine));
-				if(objToFind != null) {
+				if (objToFind != null) {
 					currentFreq = objToFind.getFrequency();
 					System.out.println(currentLine + ": " + currentFreq);
 				}
 			}
-			
+
 		} catch (IOException e) {
 			System.err.println("Error: One or more files not found!");
 			System.exit(0);
