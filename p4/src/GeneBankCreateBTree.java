@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 public class GeneBankCreateBTree {
@@ -7,6 +8,7 @@ public class GeneBankCreateBTree {
 	static int sequenceLength;
 	static BTree newBTree;
 	static String gbkFilename = "";
+
 	public static void main(String[] args) {
 
 		checkUsage(args);
@@ -16,7 +18,7 @@ public class GeneBankCreateBTree {
 		int degree = Integer.parseInt(args[1]);
 		String fileName = args[2];
 		sequenceLength = Integer.parseInt(args[3]);
-		int debugLevel;
+		int debugLevel = 0;
 
 		if (useCache) {
 			cacheSize = Integer.parseInt(args[4]);
@@ -37,6 +39,14 @@ public class GeneBankCreateBTree {
 		}
 	
 		newBTree = new BTree(degree, sequenceLength, gbkFilename, useCache, cacheSize);
+
+		//Diagnostic Messages
+		if(debugLevel == 0) {
+			System.err.println("Creating BTree...");
+		}
+		if(debugLevel == 0) {
+			System.err.println("Beginning parsing sequences of length " + sequenceLength);
+		}
 
 		/////////////////////////////////////////
 		//GeneBank File Parsing//////////////////
@@ -61,12 +71,33 @@ public class GeneBankCreateBTree {
 						if(!currentSubstring.contains("n")) {
 							obj = new TreeObject(encoder.encode(currentSubstring));
 							newBTree.insert(obj);
+
+							//Diagnostic Messages
+							if(debugLevel == 0) {
+								System.err.println("Inserting " + currentSubstring);
+							}
 						}
 					}
 				}
 			}
 		} catch(FileNotFoundException e) {
-			System.out.println("Error: File not found!");
+			System.err.println("Error: File not found!");
+		}
+
+		//Diagnostic Messages
+		if(debugLevel == 0) {
+			System.err.println("BTree creation complete. File can be found at: " + fileName);
+		}
+		if(debugLevel == 1) {
+			PrintWriter writer;
+			try {
+				writer = new PrintWriter(fileName + "dump");
+				writer.println(newBTree.dnaDump());
+				writer.close();	
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
