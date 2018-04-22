@@ -83,6 +83,7 @@ public class GeneBankCreateBTree {
 		} catch(FileNotFoundException e) {
 			System.err.println("Error: File not found!");
 		}
+		newBTree.rootWrite();
 
 		//Diagnostic Messages
 		if(debugLevel == 0) {
@@ -92,7 +93,10 @@ public class GeneBankCreateBTree {
 			PrintWriter writer;
 			try {
 				writer = new PrintWriter(fileName + "dump");
-				writer.println(newBTree.dnaDump());
+				
+				newBTree.rootRead();
+				System.out.println(newBTree.dnaDump());
+				writer.println(newBTree.toString());
 				writer.close();	
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
