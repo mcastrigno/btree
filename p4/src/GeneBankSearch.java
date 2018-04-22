@@ -1,3 +1,6 @@
+import java.io.File;
+import java.io.IOException;
+import java.util.Scanner;
 
 public class GeneBankSearch {
 
@@ -10,7 +13,7 @@ public class GeneBankSearch {
 		String bTreeFileName = args[1];
 		String queryFileName = args[2];
 		boolean useDebug;
-		int debugLevel = -1;
+		int debugLevel = 0;
 		
 		//check debug level
 		if (useCache) {
@@ -23,7 +26,30 @@ public class GeneBankSearch {
 			useDebug = true;
 			debugLevel = Integer.parseInt(args[3]);
 		}
-		
+	
+		try {
+			BTree readBTree = new BTree(bTreeFileName, useCache, cacheSize);
+			GeneSequenceEncoder encoder = new GeneSequenceEncoder();
+			readBTree.rootRead();
+			String currentLine = "";
+			TreeObject objToFind;
+			int currentFreq = 0;
+			Scanner scan = new Scanner(new File(queryFileName));
+			while(scan.hasNextLine()) {
+				currentLine = scan.nextLine().toLowerCase();
+				objToFind = readBTree.search(readBTree.getRoot(), encoder.encode(currentLine));
+				if(objToFind == null) {
+					System.out.println(currentLine + ": 0");
+				}
+				else {
+					currentFreq = objToFind.getFrequency();
+					System.out.println(currentLine + ": " + currentFreq);
+				}
+			}
+			
+		} catch (IOException e) {
+			System.err.println("Error: One or both files not found!");
+		}
 		
 	}
 
