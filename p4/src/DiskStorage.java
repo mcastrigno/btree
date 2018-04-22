@@ -72,10 +72,10 @@ public class DiskStorage {
 			raFile.writeInt(sequenceLength);
 			// raFile.close();
 		} catch (FileNotFoundException e) {
-			System.err.println("Error: File not found!");
+			System.err.println("Error 0: File not found!");
 			System.exit(0);
 		} catch (IOException e) {
-			System.err.println("Error: File not found!");
+			System.err.println("Error 1: File not found!");
 			System.exit(0);
 		}
 	}
@@ -102,7 +102,7 @@ public class DiskStorage {
 			this.nodeSize = (16 + (2 * degree - 1) * 12 + (2 * degree) * 4);
 			// raFile.close();
 		} catch (IOException e) {
-			System.err.println("Error: File not found!");
+			System.err.println("Error 3: File not found!");
 			System.exit(0);
 		}
 	}
@@ -112,7 +112,7 @@ public class DiskStorage {
 		try {
 			raFile.close();
 		} catch (IOException e) {
-			System.err.println("Error: File not found!");
+			System.err.println("Error 4: File not found!");
 			System.exit(0);
 		}
 	}
@@ -176,11 +176,11 @@ public class DiskStorage {
 			}
 			// raFile.close();
 		} catch (IOException e) {
-			System.err.println("Error: File not found!");
+			System.err.println("Error 5: File not found!");
 			System.exit(0);
 			// on Disk so we need to keep track as we read and write
 		} catch (NullPointerException e) {
-			System.err.println("Error: File not found!");
+			System.err.println("Error 6: File not found!");
 			System.exit(0);
 		}
 
@@ -197,11 +197,11 @@ public class DiskStorage {
 			raFile.seek(0);
 			raFile.writeInt(root.getNodePointer());
 		} catch (IOException e) {
-			System.err.println("Error: File not found");
+			System.err.println("Error 7: File not found");
 			System.exit(0);
 		} // root pointer keep at location 0!
 		catch (NullPointerException e) {
-			System.err.println("Error: File not found");
+			System.err.println("Error 8: File not found");
 			System.exit(0);
 		}
 	}
@@ -212,7 +212,7 @@ public class DiskStorage {
 			raFile.seek(0);
 			nodeToReturn = nodeRead(raFile.readInt());
 		} catch (IOException e) {
-			System.err.println("Error: File not found");
+			System.err.println("Error 9: File not found");
 			System.exit(0);
 		}
 		return nodeToReturn;
@@ -258,7 +258,7 @@ public class DiskStorage {
 				}
 			}
 		} catch (IOException e) {
-			System.err.println("Error: File not found");
+			System.err.println("Error 10: File not found");
 			System.exit(0);
 		}
 		if (cache) {
