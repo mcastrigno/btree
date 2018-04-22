@@ -13,13 +13,14 @@ public class GeneBankCreateBTree {
 
 		checkUsage(args);
 		boolean useCache = (Integer.parseInt(args[0]) == 1);
-		boolean useDebug;
 		int cacheSize = 100;
 		int degree = Integer.parseInt(args[1]);
 		String fileName = args[2];
 		sequenceLength = Integer.parseInt(args[3]);
-		int debugLevel = 0;
+		boolean useDebug;
+		int debugLevel = -1;
 
+		//check debug level
 		if (useCache) {
 			cacheSize = Integer.parseInt(args[4]);
 			if (args.length == 6) {
@@ -156,9 +157,10 @@ public class GeneBankCreateBTree {
 	}
 
 	public static void printUsage() {
-		System.out.println("Usage Error! Please use:");
-		System.out.println(
+		System.err.println("Usage Error! Please use:");
+		System.err.println(
 				"java GeneBankCreateBTree <0/1(no/with Cache)> <degree> <gbk file> <sequence length> [<cache size>] [<debug level>]");
+		System.exit(0);
 	}
 
 	/**
