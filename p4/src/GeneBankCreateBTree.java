@@ -57,15 +57,15 @@ public class GeneBankCreateBTree {
 		//GeneBank File Parsing//////////////////
 		/////////////////////////////////////////
 		try {
-		    String currentToken = "";
-			String currentSegment = "";
-			String currentSubstring = "";
+		    String currentToken, currentSegment, currentSubstring ;
 			GeneSequenceEncoder encoder = new GeneSequenceEncoder();
 			TreeObject obj;
 			Scanner scan = new Scanner(new File(fileName));
-			while(scan.hasNextLine() && !currentToken.equals("//")) {		
+			while(scan.hasNextLine()) {		
 				if(scan.nextLine().contains("ORIGIN")) {
-					while(scan.hasNext()) {	
+					currentToken = "";
+					currentSegment = "";
+					while(scan.hasNext() && !currentToken.equals("//")) {	
 						currentToken = scan.next();
 						if(!currentToken.equals("//") && !currentToken.matches(".*\\d+.*")) { //regex to check for integer
 							currentSegment = currentSegment + currentToken.toLowerCase();
