@@ -13,6 +13,9 @@ public class GeneBankSearch {
 		String queryFileName = args[2];
 		boolean useDebug;
 		int debugLevel = 0;
+		
+		//for cache time improvement testing
+		long startTime, endTime;
 
 		// check debug level
 		if (useCache) {
@@ -25,6 +28,8 @@ public class GeneBankSearch {
 			useDebug = true;
 			debugLevel = Integer.parseInt(args[3]);
 		}
+		
+		startTime = System.currentTimeMillis();
 
 		try {
 			BTree readBTree = new BTree(bTreeFileName, useCache, cacheSize);
@@ -42,7 +47,8 @@ public class GeneBankSearch {
 					System.out.println(currentLine + ": " + currentFreq);
 				}
 			}
-
+			endTime = System.currentTimeMillis();
+			System.err.println("Time to complete: " + (endTime - startTime) + " ms");
 		} catch (IOException e) {
 			System.err.println("Error: One or more files not found!");
 			System.exit(0);

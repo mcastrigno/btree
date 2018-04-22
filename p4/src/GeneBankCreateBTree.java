@@ -96,7 +96,7 @@ public class GeneBankCreateBTree {
 		// Diagnostic Messages
 		if (debugLevel == 0) {
 			System.err.println("BTree creation complete.");
-			System.err.println("Time in milliseconds to complete: " + (endTime - startTime));
+			System.err.println("Time to complete: " + (endTime - startTime) + " ms");
 		}
 		if (debugLevel == 1) {
 			PrintWriter writer;
