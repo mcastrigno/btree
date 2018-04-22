@@ -122,6 +122,9 @@ public class TestTree2 {
 
 		readBTree.rootRead();
 		System.out.println(readBTree.toString());
+		
+		
+		System.out.println("The frequency of 3 is :"+ readBTree.getFrequency(F));
 //		
 //		GeneSequenceEncoder encoder = new GeneSequenceEncoder();
 //		for (long i = 0; i< 14; i++) {
