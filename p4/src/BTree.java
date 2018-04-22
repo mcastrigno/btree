@@ -147,7 +147,12 @@ public class BTree {
 			//pseudo code says to increase number of nodes by one but that happens automatically in the putObjects method
 			storage.nodeWrite(currentNode);
 		}else {
-			while((i >= 1) && (key.getData() < currentNode.keyObjectAt(i).getData())){
+			while((i >= 1) && (key.getData() <= currentNode.keyObjectAt(i).getData())){
+
+				if ((key.getData() <= currentNode.keyObjectAt(i).getData())) {
+					currentNode.keyObjectAt(i).incrementFrequency();
+					return;
+				}					
 				i--;	
 			}			
 			i++;
