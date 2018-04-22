@@ -11,11 +11,15 @@ public class BTree {
 	private int sequenceLength;			//Even though the BTree does not need this info it may be good to store in case the user 
 										//attempts to search a sequence length different than what was stored as an error check
 	private BTreeNode root;
+	private BTreeNode oldRoot;
 //	public TreeStorage storage;
 	public DiskStorage storage;
 	private int numOfTreeNodes = 0;
 	private int treeStorageNumOfNodes = 0; // Used to track that the number of nodes in storage matches the number of nodes the tree object has
 	private String gbkFilename ="testDefault";
+	private boolean cache;
+	private int cacheSize;
+	
 	//Creating a tree requires creating a file structure on disk.
 	//TreeStorage class emulates that file.
 	//The actual disk version of the class is called Storage.
@@ -26,11 +30,11 @@ public class BTree {
 	//should never change, what node points to it will, but a node
 	//will always have the same location on disk
 	
-	public BTree(int degree, int sequenceLength, String gbkFilename) {	
+	public BTree(int degree, int sequenceLength, String gbkFilename, boolean cache, int cacheSize) {	
 		this.sequenceLength = sequenceLength;
 		this.gbkFilename = gbkFilename;											//Once this constructor is called 
 //		this.storage = new TreeStorage(gbkFilename, degree, sequenceLength);	//There is storage allocated with
-		this.storage = new DiskStorage(gbkFilename, degree, sequenceLength);	//There is storage allocated with
+		this.storage = new DiskStorage(gbkFilename, degree, sequenceLength, cache, cacheSize );	//There is storage allocated with
 		this.degree = degree;													//one node in it.
 		
 //		this.storage = new DiskStorage(degree, sequenceLength);		//Once the "real" disk storage is ready
@@ -39,21 +43,24 @@ public class BTree {
 		root.setLeaf(true);
 	}
 
-	public BTree(String fullFilename) throws IOException {						//This constructor is used when you want to read a BTree from disk
+	public BTree(String fullFilename, boolean cache,int cacheSize) throws IOException {						//This constructor is used when you want to read a BTree from disk
 		//this.gbkFilename = gbkFilename;						//This file is opened and metadata read so data can be accessed
-		this.storage = new DiskStorage(fullFilename);		//opens the stream and ready to read
+		this.storage = new DiskStorage(fullFilename, cache, cacheSize);		//opens the stream and ready to read
 		root = storage.rootRead();							//get the root
 		this.degree = storage.getDegree();					//get the degree
 		this.sequenceLength = storage.getSeqenceLength();	//get the sequence length
 	}
 	
+	public BTreeNode getRoot() {
+		return root;
+	}
 	
 	public BTreeNode allocateNode()  {
 		BTreeNode newNode;
 		numOfTreeNodes++;
 		newNode = new BTreeNode(numOfTreeNodes);
 		storage.nodeWrite(newNode);
-		System.out.println("The Tree number of Nodes is :" + treeStorageNumOfNodes + " and the TreeStorage number of nodes is: " + numOfTreeNodes);
+		//System.err.println("The Tree number of Nodes is :" + treeStorageNumOfNodes + " and the TreeStorage number of nodes is: " + numOfTreeNodes);
 		return newNode;
 	}
 	/**
@@ -61,6 +68,9 @@ public class BTree {
 	 */
 	public void rootWrite() {
 		storage.rootWrite(root);
+	}
+	public void rootRead() {
+		root = storage.rootRead();
 	}
 	
 	public void closeTreeFile() {
@@ -74,18 +84,18 @@ public class BTree {
 	 * 
 	 * @param node Node to be searched
 	 * @param targetKey Key to be searched for
-	 * @return TreeObject if the target key is found
+	 * @return TreeObject of the target key if found
 	 * @return null if the target key is not in the tree
 	 */
-	public TreeObject search(BTreeNode node, TreeObject targetKey) {
+	public TreeObject search(BTreeNode node, long targetKey) {
 		int i = 1;
-		while(i < node.numOfObjects() && targetKey.getData() > node.keyObjectAt(i).getData()) {
+		while((i <= node.numOfObjects()) && (targetKey > node.keyObjectAt(i).getData())) {
 			i++;
 		}
-		if(i < node.numOfObjects() && targetKey.getData() == node.keyObjectAt(i).getData()) {
-			return node.keyObjectAt(i); //This return may need to be changed to something else. I don't know if TreeObject is what we want
+		if((i <= node.numOfObjects()) && (targetKey == node.keyObjectAt(i).getData())) {
+			return node.keyObjectAt(i); 
 		}
-		else if(!node.isLeaf()) {
+		else if(node.isLeaf()) {
 			return null;
 		}
 		else {
@@ -94,14 +104,21 @@ public class BTree {
 		}
 	}
 	
+	public int getFrequency(long targetKey) {
+		return (search(root, targetKey)).getFrequency();
+		
+	}
+	
+	
 	public void insert(TreeObject key) {
 		//if(numOfTreeNodes == 0) createRoot(key); break;u
-		BTreeNode oldRoot = root;
+		oldRoot = root;
 		if(root.numOfObjects() == ((2*degree) - 1)) {
 			BTreeNode node = allocateNode();  
 			root = node;
 			root.setLeaf(false);
 			root.setChildPointer(1, oldRoot.getNodePointer());
+	//		storage.rootWrite(root); 	//added to make split child work
 			splitChild(root, 1);
 			insertNonfull(root, key);
 		}
@@ -112,28 +129,32 @@ public class BTree {
 	private void insertNonfull(BTreeNode currentNode, TreeObject key) {
 		int i = currentNode.numOfObjects();
 		if(currentNode.isLeaf()) {
-
-			boolean duplicate = false;
 			while((i >= 1) && (key.getData() <= currentNode.keyObjectAt(i).getData())){
 				if(key.getData() ==currentNode.keyObjectAt(i).getData()) {
 					currentNode.keyObjectAt(i).incrementFrequency();
-					duplicate = true;
+					storage.nodeWrite(currentNode);
+					return;
 				}
 				i--;
 			}
 
 			i = currentNode.numOfObjects();
-			if(!duplicate) {
 				while((i >= 1) && (key.getData() < currentNode.keyObjectAt(i).getData())){
 					currentNode.putObject((i+1), currentNode.keyObjectAt(i));
 					i--;
 				}
-			}
+			
 			currentNode.putObject(i+1, key);
 			//pseudo code says to increase number of nodes by one but that happens automatically in the putObjects method
 			storage.nodeWrite(currentNode);
 		}else {
-			while((i >= 1) && (key.getData() < currentNode.keyObjectAt(i).getData())){
+			while((i >= 1) && (key.getData() <= currentNode.keyObjectAt(i).getData())){
+
+				if ((key.getData() == currentNode.keyObjectAt(i).getData())) {
+					currentNode.keyObjectAt(i).incrementFrequency();
+					storage.nodeWrite(currentNode);
+					return;
+				}					
 				i--;	
 			}			
 			i++;
@@ -141,7 +162,13 @@ public class BTree {
 
 			if(currentNodeChildAtI.numOfObjects() == ((2*degree) - 1)) {
 				splitChild(currentNode, i);
-				if(key.getData() > currentNode.keyObjectAt(i).getData()) {
+
+				if(key.getData() >= currentNode.keyObjectAt(i).getData()) {
+					if ((key.getData() == currentNode.keyObjectAt(i).getData())) {
+						currentNode.keyObjectAt(i).incrementFrequency();
+						storage.nodeWrite(currentNode);
+						return;
+					}					
 					i++;
 				}
 			}
@@ -178,7 +205,12 @@ public class BTree {
 //	}
 	private void splitChild(BTreeNode currentNode, int childIndex) {
 		BTreeNode z = allocateNode();
-		BTreeNode y = storage.nodeRead(currentNode.getChildPointer(childIndex));
+		BTreeNode y;
+		if(oldRoot.getNodePointer()== currentNode.getChildPointer(childIndex)) {
+			y = oldRoot;
+		}else {
+			y = storage.nodeRead(currentNode.getChildPointer(childIndex));
+		}
 		z.setLeaf(y.isLeaf());
 		//book say to set number of z objects to degree - 1 but I don't think that
 		//makes sense here since the node has an arrayList of objects

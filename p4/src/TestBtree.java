@@ -46,8 +46,10 @@ public class TestBtree {
 		ObjectM = new TreeObject(M);
 		ObjectN = new TreeObject(N);
 		
-		BTree testTree1 = new BTree(degree, sequenceLength, testFilename);
 		
+		boolean cache = true;
+		int cacheSize = 100;
+		BTree testTree1 = new BTree(degree, sequenceLength, testFilename, cache, cacheSize);
 		testTree1.insert(ObjectA); 
 		for(int i = 1; i <= testTree1.getNumOfTreeNodes(); i++) {
 			System.out.println(testTree1.storage.nodeRead(i).toString());

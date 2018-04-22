@@ -23,6 +23,8 @@ public class testDiskStorage {
 		
 		int degree = 2;
 		int sequenceLength = 2;
+		boolean cache = true;
+		int cacheSize = 100;
 		TreeObject ObjectA, ObjectB, ObjectC, ObjectD, ObjectE, ObjectF, ObjectG, ObjectH, 
 				   ObjectI, ObjectJ, ObjectK, ObjectL, ObjectM, ObjectN;
 		String testFilename = "testFilename";
@@ -41,11 +43,11 @@ public class testDiskStorage {
 		ObjectL = new TreeObject(L);
 		ObjectM = new TreeObject(M);
 		ObjectN = new TreeObject(N);
-		BTree testTree1 = new BTree(degree, sequenceLength, testFilename);
+		BTree testTree1 = new BTree(degree, sequenceLength, testFilename, cache, cacheSize);
 		testTree1.insert(ObjectA); 
 		testTree1.insert(ObjectB); 
 		testTree1.insert(ObjectC); 
-		System.out.println(testTree1.toString());
+	//	System.out.println(testTree1.toString());
 		testTree1.insert(ObjectD); 
 		System.out.println(testTree1.toString());
 		testTree1.rootWrite();

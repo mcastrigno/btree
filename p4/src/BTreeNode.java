@@ -105,6 +105,19 @@ public class BTreeNode {
 	public TreeObject removeKeyObjectAt(int i) {
 		return objects.remove(i);
 	}
+	/**
+	* 
+	*
+	*/
+	@Override
+	public boolean equals(Object BTreeNodeToCompare) {
+		if ((BTreeNode)BTreeNodeToCompare == null) 
+			return false;
+		if (((BTreeNode)BTreeNodeToCompare).getNodePointer() == this.nodePointer)
+			return true;
+		else return false;
+	}
+	
 	
 	public String toString() {
 		String returnString = "Node located at pointer "+ nodePointer + " has " + numOfObjects() + " objects and " + numOfChildren() + " children.\n";
@@ -121,7 +134,7 @@ public class BTreeNode {
 	public String toDnaString() {
 		String returnString = "";
 		for (int i= 1; i < objects.size(); i++) {
-			returnString += (encoder.decode(key(i)) +" " + keyObjectAt(i).getFrequency() +"\n");
+			returnString += (encoder.decode(key(i)) +" " + keyObjectAt(i).getFrequency() +" "+ key(i)+"\n");
 		}
 		return returnString;
 	

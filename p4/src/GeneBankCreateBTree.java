@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 public class GeneBankCreateBTree {
@@ -7,16 +8,19 @@ public class GeneBankCreateBTree {
 	static int sequenceLength;
 	static BTree newBTree;
 	static String gbkFilename = "";
+
 	public static void main(String[] args) {
 
 		checkUsage(args);
 		boolean useCache = (Integer.parseInt(args[0]) == 1);
-		boolean useDebug;
+		int cacheSize = 100;
 		int degree = Integer.parseInt(args[1]);
 		String fileName = args[2];
 		sequenceLength = Integer.parseInt(args[3]);
-		int cacheSize, debugLevel;
+		boolean useDebug;
+		int debugLevel = 0;
 
+		//check debug level
 		if (useCache) {
 			cacheSize = Integer.parseInt(args[4]);
 			if (args.length == 6) {
@@ -35,7 +39,15 @@ public class GeneBankCreateBTree {
 			System.exit(1);
 		}
 	
-		newBTree = new BTree(degree, sequenceLength, gbkFilename);
+		newBTree = new BTree(degree, sequenceLength, fileName , useCache, cacheSize);
+
+		//Diagnostic Messages
+		if(debugLevel == 0) {
+			System.err.println("Creating BTree...");
+		}
+		if(debugLevel == 0) {
+			System.err.println("Beginning parsing sequences of length " + sequenceLength);
+		}
 
 		/////////////////////////////////////////
 		//GeneBank File Parsing//////////////////
@@ -47,7 +59,7 @@ public class GeneBankCreateBTree {
 			GeneSequenceEncoder encoder = new GeneSequenceEncoder();
 			TreeObject obj;
 			Scanner scan = new Scanner(new File(fileName));
-			while(scan.hasNextLine()) {		
+			while(scan.hasNextLine() && !currentToken.equals("//")) {		
 				if(scan.nextLine().contains("ORIGIN")) {
 					while(scan.hasNext()) {	
 						currentToken = scan.next();
@@ -55,17 +67,42 @@ public class GeneBankCreateBTree {
 							currentSegment = currentSegment + currentToken.toLowerCase();
 						}
 					}
-				}
-				for(int i = 0; i <= (currentSegment.length() - sequenceLength); i++) {	
-					currentSubstring = currentSegment.substring(i, (i + sequenceLength));
-					if(!currentSubstring.contains("n")) {
-						obj = new TreeObject(encoder.encode(currentSubstring));
-						newBTree.insert(obj);
+					for(int i = 0; i <= (currentSegment.length() - sequenceLength); i++) {	
+						currentSubstring = currentSegment.substring(i, (i + sequenceLength));
+						if(!currentSubstring.contains("n")) {
+							obj = new TreeObject(encoder.encode(currentSubstring));
+							newBTree.insert(obj);
+
+							//Diagnostic Messages
+							if(debugLevel == 0) {
+								System.err.println("Inserting " + currentSubstring);
+							}
+						}
 					}
 				}
 			}
 		} catch(FileNotFoundException e) {
-			System.out.println("Error: File not found!");
+			System.err.println("Error: File not found!");
+		}
+		newBTree.rootWrite();
+
+		//Diagnostic Messages
+		if(debugLevel == 0) {
+			System.err.println("BTree creation complete.");
+		}
+		if(debugLevel == 1) {
+			PrintWriter writer;
+			try {
+				writer = new PrintWriter(fileName + "dump");
+				
+				newBTree.rootRead();
+				System.out.println(newBTree.dnaDump());
+				writer.println(newBTree.toString());
+				writer.close();	
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -120,9 +157,10 @@ public class GeneBankCreateBTree {
 	}
 
 	public static void printUsage() {
-		System.out.println("Usage Error! Please use:");
-		System.out.println(
+		System.err.println("Usage Error! Please use:");
+		System.err.println(
 				"java GeneBankCreateBTree <0/1(no/with Cache)> <degree> <gbk file> <sequence length> [<cache size>] [<debug level>]");
+		System.exit(0);
 	}
 
 	/**
