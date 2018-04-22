@@ -92,7 +92,7 @@ public class BTree {
 		while((i <= node.numOfObjects()) && (targetKey > node.keyObjectAt(i).getData())) {
 			i++;
 		}
-		if((i < node.numOfObjects()) && (targetKey == node.keyObjectAt(i).getData())) {
+		if((i <= node.numOfObjects()) && (targetKey == node.keyObjectAt(i).getData())) {
 			return node.keyObjectAt(i); 
 		}
 		else if(node.isLeaf()) {
