@@ -51,7 +51,6 @@ public class GeneBankSearch {
 			System.err.println("Error: One or more files not found!");
 			System.exit(0);
 		}
-		
 	}
 
 	private static void checkUsage(String[] args) {
