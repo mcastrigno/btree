@@ -134,7 +134,7 @@ public class BTreeNode {
 	public String toDnaString() {
 		String returnString = "";
 		for (int i= 1; i < objects.size(); i++) {
-			returnString += (encoder.decode(key(i)) +" " + keyObjectAt(i).getFrequency() +"\n");
+			returnString += (encoder.decode(key(i)) +" " + keyObjectAt(i).getFrequency() +" "+ key(i)+"\n");
 		}
 		return returnString;
 	
