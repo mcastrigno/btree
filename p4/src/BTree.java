@@ -81,18 +81,18 @@ public class BTree {
 	 * 
 	 * @param node Node to be searched
 	 * @param targetKey Key to be searched for
-	 * @return TreeObject if the target key is found
+	 * @return TreeObject of the target key if found
 	 * @return null if the target key is not in the tree
 	 */
-	public TreeObject search(BTreeNode node, TreeObject targetKey) {
+	public TreeObject search(BTreeNode node, long targetKey) {
 		int i = 1;
-		while(i < node.numOfObjects() && targetKey.getData() > node.keyObjectAt(i).getData()) {
+		while((i <= node.numOfObjects()) && (targetKey > node.keyObjectAt(i).getData())) {
 			i++;
 		}
-		if(i < node.numOfObjects() && targetKey.getData() == node.keyObjectAt(i).getData()) {
-			return node.keyObjectAt(i); //This return may need to be changed to something else. I don't know if TreeObject is what we want
+		if((i < node.numOfObjects()) && (targetKey == node.keyObjectAt(i).getData())) {
+			return node.keyObjectAt(i); 
 		}
-		else if(!node.isLeaf()) {
+		else if(node.isLeaf()) {
 			return null;
 		}
 		else {
@@ -100,6 +100,12 @@ public class BTree {
 			return search(node, targetKey);
 		}
 	}
+	
+	public int getFrequency(long targetKey) {
+		return (search(root, targetKey)).getFrequency();
+		
+	}
+	
 	
 	public void insert(TreeObject key) {
 		//if(numOfTreeNodes == 0) createRoot(key); break;u
