@@ -48,7 +48,8 @@ public class GeneBankSearch {
 			}
 			
 		} catch (IOException e) {
-			System.err.println("Error: One or both files not found!");
+			System.err.println("Error: One or more files not found!");
+			System.exit(0);
 		}
 		
 	}

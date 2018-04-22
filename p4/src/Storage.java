@@ -15,8 +15,8 @@ public class Storage {
 		try {
 			raf = new RandomAccessFile(fileName, MODE);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err.println("Error: File not found!");
+			System.exit(0);
 		}
 	}
 
