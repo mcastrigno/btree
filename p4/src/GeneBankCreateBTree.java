@@ -88,7 +88,7 @@ public class GeneBankCreateBTree {
 
 		//Diagnostic Messages
 		if(debugLevel == 0) {
-			System.err.println("BTree creation complete. File can be found at: " + fileName);
+			System.err.println("BTree creation complete.");
 		}
 		if(debugLevel == 1) {
 			PrintWriter writer;

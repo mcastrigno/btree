@@ -38,19 +38,16 @@ public class GeneBankSearch {
 			while(scan.hasNextLine()) {
 				currentLine = scan.nextLine().toLowerCase();
 				objToFind = readBTree.search(readBTree.getRoot(), encoder.encode(currentLine));
-				if(objToFind == null) {
-					System.out.println(currentLine + ": 0");
-				}
-				else {
+				if(objToFind != null) {
 					currentFreq = objToFind.getFrequency();
 					System.out.println(currentLine + ": " + currentFreq);
 				}
 			}
 			
 		} catch (IOException e) {
-			System.err.println("Error: One or both files not found!");
+			System.err.println("Error: One or more files not found!");
+			System.exit(0);
 		}
-		
 	}
 
 	private static void checkUsage(String[] args) {
