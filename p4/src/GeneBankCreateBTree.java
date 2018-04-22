@@ -18,7 +18,7 @@ public class GeneBankCreateBTree {
 		String fileName = args[2];
 		sequenceLength = Integer.parseInt(args[3]);
 		boolean useDebug;
-		int debugLevel = -1;
+		int debugLevel = 0;
 
 		//check debug level
 		if (useCache) {
