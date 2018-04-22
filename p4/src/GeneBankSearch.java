@@ -38,10 +38,7 @@ public class GeneBankSearch {
 			while(scan.hasNextLine()) {
 				currentLine = scan.nextLine().toLowerCase();
 				objToFind = readBTree.search(readBTree.getRoot(), encoder.encode(currentLine));
-				if(objToFind == null) {
-					System.out.println(currentLine + ": 0");
-				}
-				else {
+				if(objToFind != null) {
 					currentFreq = objToFind.getFrequency();
 					System.out.println(currentLine + ": " + currentFreq);
 				}
