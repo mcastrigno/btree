@@ -19,6 +19,9 @@ public class GeneBankCreateBTree {
 		sequenceLength = Integer.parseInt(args[3]);
 		boolean useDebug;
 		int debugLevel = 0;
+		
+		//for cache time improvement testing
+		long startTime, endTime;
 
 		//check debug level
 		if (useCache) {
@@ -38,7 +41,8 @@ public class GeneBankCreateBTree {
 			System.out.println("Invalid degree of 1, fix code to reject at command line");
 			System.exit(1);
 		}
-	
+
+		startTime = System.currentTimeMillis();
 		newBTree = new BTree(degree, sequenceLength, fileName , useCache, cacheSize);
 
 		//Diagnostic Messages
@@ -86,9 +90,12 @@ public class GeneBankCreateBTree {
 		}
 		newBTree.rootWrite();
 
+		endTime = System.currentTimeMillis();
+
 		//Diagnostic Messages
 		if(debugLevel == 0) {
 			System.err.println("BTree creation complete.");
+			System.err.println("Time in milliseconds to complete: " + (endTime - startTime));
 		}
 		if(debugLevel == 1) {
 			PrintWriter writer;
