@@ -51,6 +51,9 @@ public class BTree {
 		this.sequenceLength = storage.getSeqenceLength();	//get the sequence length
 	}
 	
+	public BTreeNode getRoot() {
+		return root;
+	}
 	
 	public BTreeNode allocateNode()  {
 		BTreeNode newNode;
