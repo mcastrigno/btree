@@ -115,7 +115,7 @@ public class BTree {
 			root = node;
 			root.setLeaf(false);
 			root.setChildPointer(1, oldRoot.getNodePointer());
-			storage.rootWrite(root); 	//added to make split child work
+	//		storage.rootWrite(root); 	//added to make split child work
 			splitChild(root, 1);
 			insertNonfull(root, key);
 		}
@@ -127,21 +127,15 @@ public class BTree {
 		int i = currentNode.numOfObjects();
 		if(currentNode.isLeaf()) {
 
-			boolean duplicate = false;
-			while((i >= 1) && (key.getData() <= currentNode.keyObjectAt(i).getData())){
-				if(key.getData() ==currentNode.keyObjectAt(i).getData()) {
-					currentNode.keyObjectAt(i).incrementFrequency();
-					duplicate = true;
-				}
-				i--;
-			}
 
-			i = currentNode.numOfObjects();
-			if(!duplicate) {
-				while((i >= 1) && (key.getData() < currentNode.keyObjectAt(i).getData())){
-					currentNode.putObject((i+1), currentNode.keyObjectAt(i));
-					i--;
-				}
+			while((i >= 1) && (key.getData() <= currentNode.keyObjectAt(i).getData())){
+				if ((key.getData() == currentNode.keyObjectAt(i).getData())) {
+					currentNode.keyObjectAt(i).incrementFrequency();
+					return;
+				}					
+				currentNode.putObject((i+1), currentNode.keyObjectAt(i));
+				i--;
+
 			}
 			currentNode.putObject(i+1, key);
 			//pseudo code says to increase number of nodes by one but that happens automatically in the putObjects method
@@ -149,8 +143,9 @@ public class BTree {
 		}else {
 			while((i >= 1) && (key.getData() <= currentNode.keyObjectAt(i).getData())){
 
-				if ((key.getData() <= currentNode.keyObjectAt(i).getData())) {
+				if ((key.getData() == currentNode.keyObjectAt(i).getData())) {
 					currentNode.keyObjectAt(i).incrementFrequency();
+					storage.nodeWrite(currentNode);
 					return;
 				}					
 				i--;	
@@ -160,7 +155,13 @@ public class BTree {
 
 			if(currentNodeChildAtI.numOfObjects() == ((2*degree) - 1)) {
 				splitChild(currentNode, i);
-				if(key.getData() > currentNode.keyObjectAt(i).getData()) {
+
+				if(key.getData() >= currentNode.keyObjectAt(i).getData()) {
+					if ((key.getData() == currentNode.keyObjectAt(i).getData())) {
+						currentNode.keyObjectAt(i).incrementFrequency();
+						storage.nodeWrite(currentNode);
+						return;
+					}					
 					i++;
 				}
 			}
