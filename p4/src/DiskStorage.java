@@ -166,11 +166,11 @@ public class DiskStorage {
 			// raFile = new RandomAccessFile(fileName, rwMode);
 			int writeSeekPointer = node.getNodePointer();
 			raFile.seek(nodeStart(node.getNodePointer()));
-//			Array[] bufferArray = new Array[nodeSize];
-//			ByteBuffer writeBuffer = ByteBuffer.allocate(nodeSize);
-//			bufferArray = raFile.read(bufferArray);
-//			writeBuffer.put(writeBuffer);
-			
+			ByteBuffer writeBuffer = ByteBuffer.allocate(nodeSize);
+			//add stuff to buffer
+			byte[] writeArray = new byte[nodeSize];
+			writeBuffer.put(writeArray);
+			raFile.write(writeArray); 			
 			
 			// System.err.println("filePointer at start of write is :" +
 			// raFile.getFilePointer());
@@ -287,14 +287,13 @@ public class DiskStorage {
 				nodeToReturn.putObject(i, newObject);
 			}
 			if (!nodeToReturn.isLeaf()) {
-//childOffsetInNode(int nodePointer) 
-				raFile.seek(childPointerStart(nodeToReturn.getNodePointer()));
-				//readBufferArray.position(childOffsetIntNode(nodeToReturn.getNodePointer()));
+				//raFile.seek(childPointerStart(nodeToReturn.getNodePointer()));
+				readBufferArray.position(childOffsetIntNode(nodeToReturn.getNodePointer()));
 				// for (int i = 1; i<= nodeToReturn.numOfChildren(); i++) {
 				for (int i = 1; i <= localNumOfObjects + 1; i++) { // your rely on the number children in the array but
 																	// you have not popluated it yet
-					nodeToReturn.setChildPointer(i, raFile.readInt());
-					//nodeToReturn.setChildPointer(i, readBufferArray.getInt()); 
+					//nodeToReturn.setChildPointer(i, raFile.readInt());
+					nodeToReturn.setChildPointer(i, readBufferArray.getInt()); 
 				}
 			}
 		} catch (IOException e) {
