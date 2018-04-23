@@ -41,7 +41,6 @@ public class GeneBankCreateBTree {
 			if(debugLevel == 0) {
 				System.err.println("Optimum degree found: " + degree);
 			}
-			System.err.println();
 		} else if (degree == 1) {
 			System.err.println("Invalid degree of 1, fix code to reject at command line");
 			System.exit(1);
