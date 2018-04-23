@@ -103,10 +103,10 @@ public class GeneBankCreateBTree {
 		if (debugLevel == 1) {
 			PrintWriter writer;
 			try {
-				writer = new PrintWriter(fileName + "dump");
+				writer = new PrintWriter("dump");
 				newBTree.rootRead();
 				System.out.println(newBTree.dnaDump());
-				writer.println(newBTree.toString());
+				writer.println(newBTree.dnaDump());
 				writer.close();
 			} catch (FileNotFoundException e) {
 				System.err.println("Error 11: File not found!");
