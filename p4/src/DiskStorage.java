@@ -1,6 +1,7 @@
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
 
 /**
@@ -144,6 +145,10 @@ public class DiskStorage {
 		int childStart;
 		return childStart = nodeStart(nodePointer) + ((2 * degree) - 1) * 12 + 16;
 	}
+	public int childOffsetIntNode(int nodePointer) {
+		int childStart;
+		return childStart =  ((2 * degree) - 1) * 12 + 16;
+	}
 
 	public void nodeWrite(BTreeNode node) { // Note we do not store the dummy object of the node
 		if (cache) {
@@ -161,6 +166,12 @@ public class DiskStorage {
 			// raFile = new RandomAccessFile(fileName, rwMode);
 			int writeSeekPointer = node.getNodePointer();
 			raFile.seek(nodeStart(node.getNodePointer()));
+//			Array[] bufferArray = new Array[nodeSize];
+//			ByteBuffer writeBuffer = ByteBuffer.allocate(nodeSize);
+//			bufferArray = raFile.read(bufferArray);
+//			writeBuffer.put(writeBuffer);
+			
+			
 			// System.err.println("filePointer at start of write is :" +
 			// raFile.getFilePointer());
 			raFile.writeInt(node.getNodePointer());
@@ -240,30 +251,50 @@ public class DiskStorage {
 		}
 		try {
 			raFile.seek(nodeStart(location));
+			byte[] readArray = new byte[nodeSize];
+			raFile.read(readArray);
+			ByteBuffer readBufferArray = ByteBuffer.wrap(readArray );
+			//writeBuffer.put(readBufferArray );
 			// System.err.println("filePointer at start of read is :" +
 			// raFile.getFilePointer());
-			nodeToReturn.setNodePointer(raFile.readInt());
-			int localNumOfObjects = raFile.readInt();
-			int localIsLeaf = raFile.readInt();
-			int justToMovePointer = raFile.readInt(); // just moves the file pointer over reserved location
+
+			//nodeToReturn.setNodePointer(raFile.readInt());
+			nodeToReturn.setNodePointer(readBufferArray.getInt());
+			
+			//int localNumOfObjects = raFile.readInt();
+			int localNumOfObjects = readBufferArray.getInt();
+
+			//int localIsLeaf = raFile.readInt();
+			int localIsLeaf = readBufferArray.getInt();
+
+			//int justToMovePointer = raFile.readInt(); // just moves the file pointer over reserved location
+			int justToMovePointer = readBufferArray.getInt(); // just moves the file pointer over reserved location
+
 			if (localIsLeaf == 0) {
 				nodeToReturn.setLeaf(false);
 			} else {
 				nodeToReturn.setLeaf(true);
 			}
 			for (int i = 1; i <= localNumOfObjects; i++) {
-				long dataForNewTreeObject = raFile.readLong();
-				int frequencyForNewObject = raFile.readInt();
+				//long dataForNewTreeObject = raFile.readLong();
+				long dataForNewTreeObject = readBufferArray.getLong();
+
+				//int frequencyForNewObject = raFile.readInt();
+				int frequencyForNewObject = readBufferArray.getInt(); 
+
 				TreeObject newObject = new TreeObject(dataForNewTreeObject);
 				newObject.putFrequency(frequencyForNewObject);
 				nodeToReturn.putObject(i, newObject);
 			}
 			if (!nodeToReturn.isLeaf()) {
+//childOffsetInNode(int nodePointer) 
 				raFile.seek(childPointerStart(nodeToReturn.getNodePointer()));
+				//readBufferArray.position(childOffsetIntNode(nodeToReturn.getNodePointer()));
 				// for (int i = 1; i<= nodeToReturn.numOfChildren(); i++) {
 				for (int i = 1; i <= localNumOfObjects + 1; i++) { // your rely on the number children in the array but
 																	// you have not popluated it yet
 					nodeToReturn.setChildPointer(i, raFile.readInt());
+					//nodeToReturn.setChildPointer(i, readBufferArray.getInt()); 
 				}
 			}
 		} catch (IOException e) {
