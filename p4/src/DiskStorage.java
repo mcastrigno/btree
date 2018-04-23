@@ -9,35 +9,44 @@ import java.nio.ByteBuffer;
  * 
  *
  *         File Format For BTree Disk Storage
- *         ---------------------------------------------- Tree Metadata
- *         ---------------------------------------------- Values are byte
- *         offsets from the start of the file 0: Integer Pointer of Root Node 4:
- *         Integer Degree of Btree 8: Integer Sequence Length 12: Reserved
- *         Integer location -----------------------------------------------
+ *        ------- Tree Metadata
+ *         ------- Values are byte
+ *         offsets from the start of the file 
+ *         0: Integer Pointer of Root Node 
+ *         4: Integer Degree of Btree 
+ *         8: Integer Sequence Length 
+ *         12: Reserved Integer location 
+ *         -----------------------------------------------
  *         Start of Nodes. The file offsets are constructed to accommodate full
  *         nodes The very first node stored will be location 16 after the
- *         Metadata of the Tree Loctions are from the start of the node. 1 Node
+ *         Metadata of the Tree Locations are from the start of the node. 1 Node
  *         starts Byte 16. The space allocated for a node is as follows: 8 Bytes
  *         Metadata (1 Integer node pointer (it is not a direct pointer but
- *         rather a number that can be used to derive the actual offset + 1
- *         Integer that hold the number of nodes currently in the BTree)
+ *         rather a number that can be used to derive the actual offset) + 1
+ *         Integer that holds the number of objects  currently in the Node.
+ *         +1 Integer for leaf status, + 1 integer reserved. 
  *         (2*degree -1)*12 Bytes for each Object (long data + integer
  *         frequency) (2*degree)*4 Bytes for child Pointers
- * 
- *         ----------------------------------------------- Node Metadata
- *         ----------------------------------------------- 0: Integer Node
- *         Pointer 4: Integer Number of Objects 8: Integer Leaf 0 = false, 1 =
- *         true 12: Integer Reserved
- *         ----------------------------------------------- Node Data
- *         ----------------------------------------------- 8 -((2*degree
- *         -1)*12): Node Objects (8 bytes data, 4 bytes frequency from the end
- *         of the nodes - (2*degree) *4): Integer child pointers
  *
- *         nodeSize = (16 + (2*degree -1)*12 + (2*degree)*4) Start of Objects:
- *         16 Start of Child Pointers:16 +((2*degree -1)*12)
+ *         ----------------------------------------------- 
+ *        Node Metadata
+ *        ----------------------------------------------- 
+ *        0: Integer Node Pointer 
+ *        4: Integer Number of Objects 
+ *        8: Integer Leaf 0 = false, 1 = true 
+ *        12: Integer Reserved
+ *        ----------------------------------------------- 
+ *        Node Data
+ *        ----------------------------------------------- 
+ *        8 -((2*degree -1)*12): Node Objects (8 bytes data, 4 bytes frequency from the end
+ *        of the nodes - (2*degree) *4): Integer child pointers
  *
- *         nodeStart = 16 + nodeSize*(nodePointer - 1) // File starts at 0,
- *         nodePointer scheme starts at 1
+ *        nodeSize = (16 + (2*degree -1)*12 + (2*degree)*4) 
+ *        Start of Objects: 16 
+ *        Start of Child Pointers:16 +((2*degree -1)*12)
+ *
+ *        nodeStart = 16 + nodeSize*(nodePointer - 1) // File starts at 0,
+ *        nodePointer scheme starts at 1
  *
  */
 public class DiskStorage {
