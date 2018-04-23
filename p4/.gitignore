@@ -1,2 +1,9 @@
 /bin/
+<<<<<<< HEAD
+/.btree.data.2.5
+/test1.gbkdump
+/test1.gbk.btree.data.3.7
+/.btree.data.3.7
+=======
 /.btree.data.*
+>>>>>>> branch 'dev' of https://github.com/mcastrigno/btree.git

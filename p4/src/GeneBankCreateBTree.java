@@ -20,7 +20,10 @@ public class GeneBankCreateBTree {
 		boolean useDebug;
 		int debugLevel = 0;
 
-		//check debug level
+		// for cache time improvement testing
+		long startTime, endTime;
+
+		// check debug level
 		if (useCache) {
 			cacheSize = Integer.parseInt(args[4]);
 			if (args.length == 6) {
@@ -34,74 +37,80 @@ public class GeneBankCreateBTree {
 
 		if (degree == 0) {
 			degree = findOptimumDegree();
+			//Diagnostic Message
+			if(debugLevel == 0) {
+				System.err.println("Optimum degree found: " + degree);
+			}
 		} else if (degree == 1) {
-			System.out.println("Invalid degree of 1, fix code to reject at command line");
+			System.err.println("Invalid degree of 1, fix code to reject at command line");
 			System.exit(1);
 		}
-	
-		newBTree = new BTree(degree, sequenceLength, fileName , useCache, cacheSize);
 
-		//Diagnostic Messages
-		if(debugLevel == 0) {
+		startTime = System.currentTimeMillis();
+		newBTree = new BTree(degree, sequenceLength, fileName, useCache, cacheSize);
+
+		// Diagnostic Messages
+		if (debugLevel == 0) {
 			System.err.println("Creating BTree...");
-		}
-		if(debugLevel == 0) {
 			System.err.println("Beginning parsing sequences of length " + sequenceLength);
 		}
 
 		/////////////////////////////////////////
-		//GeneBank File Parsing//////////////////
+		// GeneBank File Parsing/////////////////
 		/////////////////////////////////////////
 		try {
-		    String currentToken = "";
-			String currentSegment = "";
-			String currentSubstring = "";
+			String currentToken, currentSegment, currentSubstring;
 			GeneSequenceEncoder encoder = new GeneSequenceEncoder();
 			TreeObject obj;
 			Scanner scan = new Scanner(new File(fileName));
-			while(scan.hasNextLine() && !currentToken.equals("//")) {		
-				if(scan.nextLine().contains("ORIGIN")) {
-					while(scan.hasNext()) {	
+			while (scan.hasNextLine()) {
+				if (scan.nextLine().contains("ORIGIN")) {
+					currentToken = "";
+					currentSegment = "";
+					while (scan.hasNext() && !currentToken.equals("//")) {
 						currentToken = scan.next();
-						if(!currentToken.equals("//") && !currentToken.matches(".*\\d+.*")) { //regex to check for integer
+						if (!currentToken.equals("//") && !currentToken.matches(".*\\d+.*")) { // regex to check for
+																								// integer
 							currentSegment = currentSegment + currentToken.toLowerCase();
 						}
 					}
-					for(int i = 0; i <= (currentSegment.length() - sequenceLength); i++) {	
+					for (int i = 0; i <= (currentSegment.length() - sequenceLength); i++) {
 						currentSubstring = currentSegment.substring(i, (i + sequenceLength));
-						if(!currentSubstring.contains("n")) {
+						if (!currentSubstring.contains("n")) {
 							obj = new TreeObject(encoder.encode(currentSubstring));
 							newBTree.insert(obj);
 
-							//Diagnostic Messages
-							if(debugLevel == 0) {
+							// Diagnostic Messages
+							if (debugLevel == 0) {
 								System.err.println("Inserting " + currentSubstring);
 							}
 						}
 					}
 				}
 			}
-		} catch(FileNotFoundException e) {
+		} catch (FileNotFoundException e) {
 			System.err.println("Error: File not found!");
 		}
 		newBTree.rootWrite();
 
-		//Diagnostic Messages
-		if(debugLevel == 0) {
+		endTime = System.currentTimeMillis();
+
+		// Diagnostic Messages
+		if (debugLevel == 0) {
 			System.err.println("BTree creation complete.");
+			System.err.println("Time to complete: " + (endTime - startTime) + " ms");
 		}
-		if(debugLevel == 1) {
+		if (debugLevel == 1) {
 			PrintWriter writer;
 			try {
 				writer = new PrintWriter(fileName + "dump");
-				
 				newBTree.rootRead();
 				System.out.println(newBTree.dnaDump());
 				writer.println(newBTree.toString());
-				writer.close();	
+				writer.close();
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.err.println("Error 11: File not found!");
+				System.exit(0);
 			}
 		}
 	}
@@ -171,10 +180,10 @@ public class GeneBankCreateBTree {
 	 */
 	static int findOptimumDegree() {
 		int optimumDegree = 2;
-		while ((5 + (((2 * optimumDegree) - 1) * 12) + (((2 * optimumDegree) - 1) * 4)) <= 4096) {
+		while ((16 + (((2 * optimumDegree) - 1) * 12) + ((2 * optimumDegree)  * 4)) <= 4096) {
 			optimumDegree++;
 		}
-		return optimumDegree;
+		return optimumDegree - 1;
 	}
 
 }
