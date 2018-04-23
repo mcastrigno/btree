@@ -181,7 +181,7 @@ public class GeneBankCreateBTree {
 	 */
 	static int findOptimumDegree() {
 		int optimumDegree = 2;
-		while ((16 + (((2 * optimumDegree) - 1) * 12) + ((2 * optimumDegree)  * 4)) < 4096) {
+		while ((16 + (((2 * optimumDegree) - 1) * 12) + ((2 * optimumDegree)  * 4)) <= 4096) {
 			optimumDegree++;
 		}
 		return optimumDegree - 1;
