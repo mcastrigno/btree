@@ -37,8 +37,13 @@ public class GeneBankCreateBTree {
 
 		if (degree == 0) {
 			degree = findOptimumDegree();
+			//Diagnostic Message
+			if(debugLevel == 0) {
+				System.err.println("Optimum degree found: " + degree);
+			}
+			System.err.println();
 		} else if (degree == 1) {
-			System.out.println("Invalid degree of 1, fix code to reject at command line");
+			System.err.println("Invalid degree of 1, fix code to reject at command line");
 			System.exit(1);
 		}
 
@@ -48,8 +53,6 @@ public class GeneBankCreateBTree {
 		// Diagnostic Messages
 		if (debugLevel == 0) {
 			System.err.println("Creating BTree...");
-		}
-		if (debugLevel == 0) {
 			System.err.println("Beginning parsing sequences of length " + sequenceLength);
 		}
 
@@ -102,14 +105,13 @@ public class GeneBankCreateBTree {
 			PrintWriter writer;
 			try {
 				writer = new PrintWriter(fileName + "dump");
-
 				newBTree.rootRead();
 				System.out.println(newBTree.dnaDump());
 				writer.println(newBTree.toString());
 				writer.close();
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.err.println("Error 11: File not found!");
+				System.exit(0);
 			}
 		}
 	}
@@ -182,7 +184,7 @@ public class GeneBankCreateBTree {
 		while ((16 + (((2 * optimumDegree) - 1) * 12) + ((2 * optimumDegree)  * 4)) < 4096) {
 			optimumDegree++;
 		}
-		return optimumDegree -1;
+		return optimumDegree - 1;
 	}
 
 }
