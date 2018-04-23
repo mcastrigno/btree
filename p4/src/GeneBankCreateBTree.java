@@ -184,7 +184,7 @@ public class GeneBankCreateBTree {
 		while ((16 + (((2 * optimumDegree) - 1) * 12) + ((2 * optimumDegree)  * 4)) <= 4096) {
 			optimumDegree++;
 		}
-		return optimumDegree;
+		return optimumDegree - 1;
 	}
 
 }
