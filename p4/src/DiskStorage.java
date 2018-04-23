@@ -168,32 +168,45 @@ public class DiskStorage {
 			raFile.seek(nodeStart(node.getNodePointer()));
 			ByteBuffer writeBuffer = ByteBuffer.allocate(nodeSize);
 			//add stuff to buffer
-			byte[] writeArray = new byte[nodeSize];
-			writeBuffer.put(writeArray);
-			raFile.write(writeArray); 			
 			
 			// System.err.println("filePointer at start of write is :" +
 			// raFile.getFilePointer());
-			raFile.writeInt(node.getNodePointer());
-			raFile.writeInt(node.numOfObjects());
+			
+			//raFile.writeInt(node.getNodePointer());
+			writeBuffer.putInt(node.getNodePointer());
+
+			//raFile.writeInt(node.numOfObjects());
+			writeBuffer.putInt(node.numOfObjects());
+
 			if (!node.isLeaf()) {
-				raFile.writeInt(0);
+				//raFile.writeInt(0);
+				writeBuffer.putInt(0);
 			} else {
-				raFile.writeInt(1);
+				//raFile.writeInt(1);
+				writeBuffer.putInt(1);
 			}
 			raFile.writeInt(0); // done just to advance the pointer
 			for (int i = 1; i <= node.numOfObjects(); i++) {
-				raFile.writeLong(node.key(i));
-				raFile.writeInt(node.keyObjectAt(i).getFrequency());
+				//raFile.writeLong(node.key(i));
+				writeBuffer.putLong(node.key(i));
+
+				//raFile.writeInt(node.keyObjectAt(i).getFrequency());
+				writeBuffer.putInt(node.keyObjectAt(i).getFrequency());
 			}
 			if (!node.isLeaf()) {
-				raFile.seek(childPointerStart(node.getNodePointer()));
+				//raFile.seek(childPointerStart(node.getNodePointer()));
+				writeBuffer.position(childPointerStart(node.getNodePointer()));
+
 				for (int i = 1; i <= node.numOfChildren(); i++) {
 					// System.err.println("filePointer at start of child "+i+ " write is :" +
 					// raFile.getFilePointer());
-					raFile.writeInt(node.getChildPointer(i));
+					//raFile.writeInt(node.getChildPointer(i));
+					writeBuffer.putInt(node.getChildPointer(i));
 				}
 			}
+			byte[] writeArray = new byte[nodeSize];
+			writeArray = writeBuffer.array();
+			raFile.write(writeArray); 			
 			// raFile.close();
 		} catch (IOException e) {
 			System.err.println("Error 5: File not found!");
