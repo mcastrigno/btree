@@ -56,7 +56,7 @@ public class GeneBankCreateBTree {
 		}
 
 		/////////////////////////////////////////
-		// GeneBank File Parsing//////////////////
+		// GeneBank File Parsing/////////////////
 		/////////////////////////////////////////
 		try {
 			String currentToken, currentSegment, currentSubstring;
