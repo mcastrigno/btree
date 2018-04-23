@@ -195,7 +195,7 @@ public class DiskStorage {
 			}
 			if (!node.isLeaf()) {
 				//raFile.seek(childPointerStart(node.getNodePointer()));
-				writeBuffer.position(childPointerStart(node.getNodePointer()));
+				writeBuffer.position(childOffsetIntNode(node.getNodePointer()));
 
 				for (int i = 1; i <= node.numOfChildren(); i++) {
 					// System.err.println("filePointer at start of child "+i+ " write is :" +
