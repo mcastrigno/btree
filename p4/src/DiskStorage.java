@@ -166,34 +166,48 @@ public class DiskStorage {
 			// raFile = new RandomAccessFile(fileName, rwMode);
 			int writeSeekPointer = node.getNodePointer();
 			raFile.seek(nodeStart(node.getNodePointer()));
-//			Array[] bufferArray = new Array[nodeSize];
-//			ByteBuffer writeBuffer = ByteBuffer.allocate(nodeSize);
-//			bufferArray = raFile.read(bufferArray);
-//			writeBuffer.put(writeBuffer);
-			
+			ByteBuffer writeBuffer = ByteBuffer.allocate(nodeSize);
+			//add stuff to buffer
 			
 			// System.err.println("filePointer at start of write is :" +
 			// raFile.getFilePointer());
-			raFile.writeInt(node.getNodePointer());
-			raFile.writeInt(node.numOfObjects());
+			
+			//raFile.writeInt(node.getNodePointer());
+			writeBuffer.putInt(node.getNodePointer());
+
+			//raFile.writeInt(node.numOfObjects());
+			writeBuffer.putInt(node.numOfObjects());
+
 			if (!node.isLeaf()) {
-				raFile.writeInt(0);
+				//raFile.writeInt(0);
+				writeBuffer.putInt(0);
 			} else {
-				raFile.writeInt(1);
+				//raFile.writeInt(1);
+				writeBuffer.putInt(1);
 			}
-			raFile.writeInt(0); // done just to advance the pointer
+			//raFile.writeInt(0); // done just to advance the pointer
+			writeBuffer.putInt(0);
 			for (int i = 1; i <= node.numOfObjects(); i++) {
-				raFile.writeLong(node.key(i));
-				raFile.writeInt(node.keyObjectAt(i).getFrequency());
+				//raFile.writeLong(node.key(i));
+				writeBuffer.putLong(node.key(i));
+
+				//raFile.writeInt(node.keyObjectAt(i).getFrequency());
+				writeBuffer.putInt(node.keyObjectAt(i).getFrequency());
 			}
 			if (!node.isLeaf()) {
-				raFile.seek(childPointerStart(node.getNodePointer()));
+				//raFile.seek(childPointerStart(node.getNodePointer()));
+				writeBuffer.position(childOffsetIntNode(node.getNodePointer()));
+
 				for (int i = 1; i <= node.numOfChildren(); i++) {
 					// System.err.println("filePointer at start of child "+i+ " write is :" +
 					// raFile.getFilePointer());
-					raFile.writeInt(node.getChildPointer(i));
+					//raFile.writeInt(node.getChildPointer(i));
+					writeBuffer.putInt(node.getChildPointer(i));
 				}
 			}
+			byte[] writeArray = new byte[nodeSize];
+			writeArray = writeBuffer.array();
+			raFile.write(writeArray); 			
 			// raFile.close();
 		} catch (IOException e) {
 			System.err.println("Error 5: File not found!");
@@ -251,6 +265,8 @@ public class DiskStorage {
 		}
 		try {
 			raFile.seek(nodeStart(location));
+			 //System.err.println("filePointer at start of read is :" +
+			 //raFile.getFilePointer());
 			byte[] readArray = new byte[nodeSize];
 			raFile.read(readArray);
 			ByteBuffer readBufferArray = ByteBuffer.wrap(readArray );
@@ -287,14 +303,13 @@ public class DiskStorage {
 				nodeToReturn.putObject(i, newObject);
 			}
 			if (!nodeToReturn.isLeaf()) {
-//childOffsetInNode(int nodePointer) 
-				raFile.seek(childPointerStart(nodeToReturn.getNodePointer()));
-				//readBufferArray.position(childOffsetIntNode(nodeToReturn.getNodePointer()));
+				//raFile.seek(childPointerStart(nodeToReturn.getNodePointer()));
+				readBufferArray.position(childOffsetIntNode(nodeToReturn.getNodePointer()));
 				// for (int i = 1; i<= nodeToReturn.numOfChildren(); i++) {
 				for (int i = 1; i <= localNumOfObjects + 1; i++) { // your rely on the number children in the array but
 																	// you have not popluated it yet
-					nodeToReturn.setChildPointer(i, raFile.readInt());
-					//nodeToReturn.setChildPointer(i, readBufferArray.getInt()); 
+					//nodeToReturn.setChildPointer(i, raFile.readInt());
+					nodeToReturn.setChildPointer(i, readBufferArray.getInt()); 
 				}
 			}
 		} catch (IOException e) {
