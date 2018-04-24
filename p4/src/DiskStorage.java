@@ -185,7 +185,8 @@ public class DiskStorage {
 				//raFile.writeInt(1);
 				writeBuffer.putInt(1);
 			}
-			raFile.writeInt(0); // done just to advance the pointer
+			//raFile.writeInt(0); // done just to advance the pointer
+			writeBuffer.putInt(0);
 			for (int i = 1; i <= node.numOfObjects(); i++) {
 				//raFile.writeLong(node.key(i));
 				writeBuffer.putLong(node.key(i));
@@ -264,6 +265,8 @@ public class DiskStorage {
 		}
 		try {
 			raFile.seek(nodeStart(location));
+			 //System.err.println("filePointer at start of read is :" +
+			 //raFile.getFilePointer());
 			byte[] readArray = new byte[nodeSize];
 			raFile.read(readArray);
 			ByteBuffer readBufferArray = ByteBuffer.wrap(readArray );
