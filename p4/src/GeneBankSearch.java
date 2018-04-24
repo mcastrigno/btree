@@ -98,7 +98,7 @@ public class GeneBankSearch {
 	public static void printUsage() {
 		System.err.println("Usage Error! Please use:");
 		System.err.println(
-				"java GeneBankCreateBTree <0/1(no/with Cache)> <btree file> <query file> [<cache size>] [<debug level>]");
+				"java GeneBankeSearchBTree <0/1(no/with Cache)> <btree file> <query file> [<cache size>] [<debug level>]");
 		System.exit(0);
 	}
 

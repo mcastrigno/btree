@@ -49,7 +49,7 @@ public class TestTree2 {
 		ObjectM = new TreeObject(M);
 		ObjectN = new TreeObject(N);
 		
-		boolean cache = true;
+		boolean cache = false;
 		int cacheSize = 100;
 		BTree testTree1 = new BTree(degree, sequenceLength, testFilename, cache, cacheSize);
 		
